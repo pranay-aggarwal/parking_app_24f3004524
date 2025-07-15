@@ -1,0 +1,117 @@
+.register-container {
+    max-width: 600px;
+    margin: 3rem auto 0 auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 24px rgba(21,101,192,0.07);
+    padding: 2.5rem 2rem 2rem 2rem;
+    color: #222;
+}
+
+.register-container h1 {
+    text-align: center;
+    color: #1565c0;
+    margin-bottom: 1.5rem;
+    text-shadow: none;
+}
+
+.register-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.register-container label {
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+    color: #1976d2;
+}
+
+.register-container input[type="text"],
+.register-container input[type="email"],
+.register-container input[type="password"] {
+    padding: 0.7rem 1rem;
+    border-radius: 7px;
+    border: 1.5px solid #90caf9;
+    background: #f4f8fb;
+    color: #222;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+.register-container input:focus {
+    border: 1.5px solid #1565c0;
+    box-shadow: 0 0 0 2px #90caf9;
+}
+
+.register-container button[type="submit"] {
+    background: #1565c0;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.7rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(21,101,192,0.08);
+}
+
+.register-container button[type="submit"]:hover {
+    background: #1976d2;
+    box-shadow: 0 4px 16px rgba(21,101,192,0.15);
+}
+
+.register-container .flash-message {
+    background: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #90caf9;
+    border-radius: 6px;
+    padding: 0.7rem 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.register-container p {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #1976d2;
+}
+
+.register-container a {
+    color: #1565c0;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.register-container a:hover {
+    color: #1976d2;
+}
+
+@media (max-width: 600px) {
+    .nav-container, .container {
+        width: 98%;
+        padding: 1rem;
+    }
+    .navbar h1 {
+        font-size: 1.2rem;
+    }
+    .container h2 {
+        font-size: 1.1rem;
+    }
+    .btn-primary, .nav-links a {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+    .register-container {
+        width: 98%;
+        padding: 1rem;
+    }
+    .register-container h1 {
+        font-size: 1.2rem;
+    }
+} 

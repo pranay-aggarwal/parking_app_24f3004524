@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Management App</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1> Parking Management App</h1>
+            <div class="nav-links">
+                
+                <a href="{{ url_for('login') }}" class="btn-secondary">Login</a>
+                <a href="{{ url_for('register') }}" class="btn-secondary">Register</a>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <section class="ecommerce">
+            <h2>Welcome to the Parking Management App</h2>
+            <p>Manage your parking spaces efficiently.</p>
+        <section>
+    </div>
+
+    <div class="section" style="text-align: center">
+        <a href="{{ url_for('login') }}" class="btn-primary">Open Your Account</a>
+        <a href="{{ url_for('register') }}" class="btn-primary">Create an Account</a>
+    </div>
+
+</body>
+</html>
+
+
+
+
+
