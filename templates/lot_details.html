@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lot Details - {{ lot.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <style>
+        .spot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1em;
+            margin-top: 2em;
+        }
+        .spot {
+            padding: 1em;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+        }
+        .spot.available {
+            background-color: #28a745; 
+        }
+        .spot.occupied {
+            background-color: #dc3545; 
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('admin_dashboard') }}">&larr; Back to Dashboard</a>
+    <h1>Details for {{ lot.name }}</h1>
+    <p><strong>Address:</strong> {{ lot.address }}, {{ lot.pincode }}</p>
+    <hr>
+    <h2>Spot Status</h2>
+    <div class="spot-grid">
+        {% for spot in spots %}
+            <div class="spot {% if spot.status == 'A' %}available{% else %}occupied{% endif %}">
+                Spot {{ spot.spot_number }}
+                <br>
+                <span>{% if spot.status == 'A' %}Available{% else %}Occupied{% endif %}</span>
+            </div>
+        {% else %}
+            <p>No spots found for this lot.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
