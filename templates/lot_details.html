@@ -40,17 +40,28 @@
     </style>
 </head>
 <body>
-    <a href="{{ url_for('admin_dashboard') }}">&larr; Back to Dashboard</a>
+    <div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary"> Back to Dashboard</a>
+    </div>
+   
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <h1>Details for {{ lot.name }}</h1>
     <p><strong>Address:</strong> {{ lot.address }}, {{ lot.pincode }}</p>
-    <p><strong>Current Spots:</strong> {{ spot_details|length }} / {{ lot.capacity }}</p>
+    <p><strong>Current Active Spots:</strong> {{ spot_details|length }} / {{ lot.capacity }}</p>
     <hr>
 
     {% if spot_details|length < lot.capacity %}
     <div class="add-spot-form">
         <h3>Add New Spot</h3>
         <form action="{{ url_for('add_spot', lot_id=lot.id) }}" method="POST">
-            <button type="submit">Add Spot</button>
+            <button type="submit" class="btn btn-success">Add Spot</button>
         </form>
     </div>
     <hr>

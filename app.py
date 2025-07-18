@@ -1,11 +1,17 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 from models.models import db, User, ParkingLot, ParkingSpot, Booking
+from datetime import datetime
+import math
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'my_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.db'
 db.init_app(app)
 
+# --- Index Route ---
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 
 
@@ -102,6 +108,10 @@ def delete_spot(spot_id):
     spot_to_delete = ParkingSpot.query.get_or_404(spot_id)
     lot_id = spot_to_delete.lot_id
 
+    if spot_to_delete.bookings:
+        flash("Cannot delete spot: It has booking history. Deleting it would remove these records.", "error")
+        return redirect(url_for('view_lot_details', lot_id=lot_id))
+    
     if spot_to_delete.status == 'O':
         flash("Cannot delete an occupied spot.", "error")
         return redirect(url_for('view_lot_details', lot_id=lot_id))
@@ -232,7 +242,6 @@ def login():
             if user.is_admin:
                 return redirect(url_for('admin_dashboard'))
             else:
-                # ///
                 return redirect(url_for('user_dashboard'))
         else:
             flash("Invalid credentials.", "error")
@@ -266,9 +275,86 @@ def register():
     return render_template('register.html')
 
 
-# --- User Routes ---
+
+# --- User Routes ---    
 @app.route('/dashboard')
 def user_dashboard():
-    if not session.get('user_id'):
+    user_id = session.get('user_id')
+    if not user_id:
         return redirect(url_for('login'))
-    return "<h1>Welcome User!</h1>" # ///
+
+    active_bookings = Booking.query.filter_by(user_id=user_id, check_out_time=None).all()
+
+    lots = ParkingLot.query.all()
+    for lot in lots:
+        lot.available_spots = ParkingSpot.query.filter_by(lot_id=lot.id, status='A').count()
+            
+    return render_template('user_dashboard.html', lots=lots, active_bookings=active_bookings)
+
+
+# User Dashboard: Logout Function
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("You have been logged out.", "success")
+    return redirect(url_for('login'))
+
+
+
+# User Dashboard: Book Parking Spot Function
+@app.route('/book/<int:lot_id>', methods=['POST'])
+def book_spot(lot_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        flash("You must be logged in to book a spot.", "error")
+        return redirect(url_for('login'))
+
+    available_spot = ParkingSpot.query.filter_by(lot_id=lot_id, status='A').first()
+    if available_spot:
+        available_spot.status = 'O'
+        vehicle_number = request.form.get('vehicle_number')
+
+        if not vehicle_number:
+            flash("Vehicle number is required.", "error")
+            return redirect(url_for('user_dashboard'))
+
+        new_booking = Booking(user_id=user_id, spot_id=available_spot.id, vehicle_number=vehicle_number)
+        db.session.add(new_booking)
+        db.session.commit()
+        flash(f"Successfully booked Spot #{available_spot.spot_number} in {available_spot.parking_lot.name}!", "success")
+    else:
+        flash("Sorry, this parking lot is now full.", "error")
+
+    return redirect(url_for('user_dashboard'))
+
+
+
+# User Dashboard: Release Parking Spot Function
+@app.route('/release_spot/<int:booking_id>', methods=['POST'])
+def release_spot(booking_id):
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
+    booking_to_release = Booking.query.filter_by(id=booking_id, user_id=user_id, check_out_time=None).first()
+
+    if booking_to_release:
+        
+        booking_to_release.check_out_time = datetime.utcnow()
+        spot = ParkingSpot.query.get(booking_to_release.spot_id)
+        lot = ParkingLot.query.get(spot.lot_id)
+        spot.status = 'A'
+
+        # Calculate total cost 
+        duration = booking_to_release.check_out_time - booking_to_release.check_in_time
+        duration_in_hours = math.ceil(duration.total_seconds() / 3600)
+        total_cost = duration_in_hours * lot.price_per_hour
+        booking_to_release.total_cost = total_cost
+        
+        db.session.commit()
+        
+        flash(f"Spot released successfully.You Parked for approx. {duration_in_hours} hours. Total cost: ₹{total_cost:.2f}", "success")
+    else:
+        flash("Booking not found or already released.", "error")
+
+    return redirect(url_for('user_dashboard'))

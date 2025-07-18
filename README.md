@@ -11,3 +11,4 @@
 - python -m venv venv
 - .\venv\Scripts\activate (windows) or . venv/Scripts/activate (git bash)
 - pip install -r requirements.txt
+- python setup_db.py

@@ -6,7 +6,9 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <a href="{{ url_for('admin_dashboard') }}">&larr; Back to Dashboard</a>
+    <div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary"> Back to Dashboard</a>
+    </div>
     <h1>Edit Parking Lot: {{ lot.name }}</h1>
 
     <hr>

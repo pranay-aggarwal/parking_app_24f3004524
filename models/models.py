@@ -33,6 +33,7 @@ class ParkingSpot(db.Model):
 class Booking(db.Model):
     __tablename__ = 'bookings'
     id = db.Column(db.Integer, primary_key=True)
+    vehicle_number = db.Column(db.String(20), nullable=False)
     check_in_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     check_out_time = db.Column(db.DateTime, nullable=True)
     total_cost = db.Column(db.Float, nullable=True)

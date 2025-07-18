@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <h1>User Dashboard</h1>
+    <div>
+        <a href ="{{ url_for('index') }}" class="btn btn-primary">Home</a>
+        <a href="{{ url_for('logout') }}" class="btn btn-danger" style="float:right;">Logout</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <hr>
+
+    <h2>Your Active Parking Spots</h2>
+    {% if active_bookings %}
+        {% for booking in active_bookings %}
+        <div class="card-form" style="margin-bottom: 1em;">
+            <p><strong>Lot:</strong> {{ booking.parking_spot.parking_lot.name }}</p>
+            <p><strong>Spot:</strong> #{{ booking.parking_spot.spot_number }}</p>
+            <p><strong>Checked in at:</strong> {{ booking.check_in_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            
+            <form action="{{ url_for('release_spot', booking_id=booking.id) }}" method="POST">
+                <button type="submit" class="btn btn-danger">Release This Spot</button>
+            </form>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>You have no active parking spots.</p>
+    {% endif %}
+    
+    <hr>
+
+    <h2>Book a Parking Spot</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Lot Name</th>
+                <th>Address</th>
+                <th>Price/Hour</th>
+                <th>Available Spots</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lot in lots %}
+            <tr>
+                <td>{{ lot.name }}</td>
+                <td>{{ lot.address }}</td>
+                <td>₹{{ '%.2f'|format(lot.price_per_hour) }}</td>
+                <td>{{ lot.available_spots }} / {{ lot.capacity }}</td>
+                <td>
+                    {% if lot.available_spots > 0 %}
+                        <form action="{{ url_for('book_spot', lot_id=lot.id) }}" method="POST">
+                            <input type="text" name="vehicle_number" placeholder="Enter Vehicle No." required style="width: 150px; display: inline-block; margin-right: 5px;">
+                            <button type="submit" class="btn btn-success">Book Now</button>
+                        </form>
+                    {% else %}
+                        <button class="btn" disabled>Full</button>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
