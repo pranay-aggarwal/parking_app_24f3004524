@@ -109,7 +109,7 @@ def delete_spot(spot_id):
     db.session.delete(spot_to_delete)
     db.session.commit()
 
-    flash(f"Spot {spot_to_delete.spot_number} deleted successfully. Lot capacity updated.", "success")
+    flash(f"Spot {spot_to_delete.spot_number} deleted successfully.", "success")
     return redirect(url_for('view_lot_details', lot_id=lot_id))
 
 
@@ -172,6 +172,13 @@ def view_users():
 
 
 # Admin Dashboard: View Summary Charts Route
+@app.route('/admin/charts')
+def admin_charts():
+    if not session.get('is_admin'):
+        flash("Admin access required.", "error")
+        return redirect(url_for('login'))
+    return render_template('admin_charts.html')
+
 @app.route('/api/admin/chart-data')
 def admin_chart_data():
     if not session.get('is_admin'):
@@ -233,6 +240,30 @@ def login():
 
 
 
+
+# ---- Registration Route ---
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # Check if username or email already exists
+        user_exists = User.query.filter((User.username == username) | (User.email == email)).first()
+        if user_exists:
+            flash("Username or email already exists. Please choose another.", "error")
+            return redirect(url_for('register'))
+
+        # Create new user
+        new_user = User(username=username, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash("Registration successful! Please log in.", "success")
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
 
 
 # --- User Routes ---
