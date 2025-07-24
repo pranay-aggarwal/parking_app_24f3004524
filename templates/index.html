@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Park Easy</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+
+<body>
+    <header class="main-header">
+        <nav>
+            <a href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Park Easy Logo" class="navbar-logo">
+            </a>
+            <div class="nav-actions">
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+                <a href="{{ url_for('register') }}" class="btn btn-success">Register</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-container">
+            <div class="hero-text">
+                <h1>Find Your Perfect Spot, Stress-Free.</h1>
+                <p>Say goodbye to circling the block. With Park Easy, you can find, book, and pay for parking in just a few taps.</p>
+                <div class="hero-actions">
+                    <a href="{{ url_for('register') }}" class="btn btn-success">Get Started</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="{{ url_for('static', filename='images/hero.png') }}" alt="Hero image">
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>

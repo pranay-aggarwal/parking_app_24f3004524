@@ -3,6 +3,8 @@ from models.models import db, User, ParkingLot, ParkingSpot, Booking
 from datetime import datetime
 import math
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'my_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.db'
@@ -13,6 +15,98 @@ db.init_app(app)
 def index():
     return render_template('index.html')
 
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# --- Logout Function Helper ---
+@app.route('/logout')
+def logout():
+    session.clear()
+    flash("You have been logged out.", "success")
+    return redirect(url_for('login'))
+
+
+
+# --- Format Duration ---
+def format_duration(booking):
+    if not (booking.check_out_time and booking.check_in_time):
+        return "N/A"
+
+    delta = booking.check_out_time - booking.check_in_time
+    total_seconds = delta.total_seconds()
+    
+    days, remainder = divmod(total_seconds, (24*60*60))
+    hours, remainder = divmod(remainder, (60*60))
+    minutes, remainder = divmod(remainder, 60)
+    
+    parts = ""
+    if days > 0:
+        parts += (f"{int(days)} days ")
+    if hours > 0:
+        parts += (f"{int(hours)} hours ")
+    if minutes > 0:
+        parts += (f"{int(minutes)} minutes")
+    
+    if parts:
+        return parts  
+    else:
+        return "Less than a minute"
+    
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# --- Login Routes ---
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user = User.query.filter_by(username=username).first()
+
+        if user and user.password == password:
+            session['user_id'] = user.id
+            session['is_admin'] = user.is_admin
+            flash("Login successful!", "success")
+            if user.is_admin:
+                return redirect(url_for('admin_dashboard'))
+            else:
+                return redirect(url_for('user_dashboard'))
+        else:
+            flash("Invalid credentials.", "error")
+    return render_template('login.html')
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+# ---- Registration Route ---
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # Check if username or email already exists
+        user_exists = User.query.filter((User.username == username) | (User.email == email)).first()
+        if user_exists:
+            flash("Username or email already exists. Please choose another.", "error")
+            return redirect(url_for('register'))
+
+        # Create new user
+        new_user = User(username=username, email=email, password=password)
+        db.session.add(new_user)
+        db.session.commit()
+
+        flash("Registration successful! Please log in.", "success")
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 # --- Admin Routes ---
@@ -57,7 +151,7 @@ def admin_dashboard():
 
 
 
-# Admin Dashboard: View Parking Lot Details Route (Read)
+# Admin Dashboard: View Parking Lot Details Route 
 @app.route('/admin/lot/<int:lot_id>')
 def view_lot_details(lot_id):
     if not session.get('is_admin'):
@@ -78,7 +172,7 @@ def view_lot_details(lot_id):
     return render_template('lot_details.html', lot=lot, spot_details=spot_details)
 
 
-# Admin Dashboard: Spot Add and Delete Route (Create/Delete)
+# Admin Dashboard: Spot Add and Delete Route 
 @app.route('/admin/lot/<int:lot_id>/add_spot', methods=['POST'])
 def add_spot(lot_id):
     if not session.get('is_admin'):
@@ -108,7 +202,9 @@ def delete_spot(spot_id):
     spot_to_delete = ParkingSpot.query.get_or_404(spot_id)
     lot_id = spot_to_delete.lot_id
 
-    if spot_to_delete.bookings:
+    existing_booking = Booking.query.filter_by(spot_id=spot_id).first()
+
+    if existing_booking:
         flash("Cannot delete spot: It has booking history. Deleting it would remove these records.", "error")
         return redirect(url_for('view_lot_details', lot_id=lot_id))
     
@@ -124,7 +220,7 @@ def delete_spot(spot_id):
 
 
 
-# Admin Dashboard: Edit Parking Lot Route (Update)
+# Admin Dashboard: Edit Parking Lot Route 
 @app.route('/admin/lot/edit/<int:lot_id>', methods=['GET', 'POST'])
 def edit_lot(lot_id):
     if not session.get('is_admin'):
@@ -147,7 +243,7 @@ def edit_lot(lot_id):
 
 
 
-# Admin Dashboard: Delete Parking Lot Route (Delete)
+# Admin Dashboard: Delete Parking Lot Route 
 @app.route('/admin/lot/delete/<int:lot_id>', methods=['POST'])
 def delete_lot(lot_id):
     if not session.get('is_admin'):
@@ -156,8 +252,11 @@ def delete_lot(lot_id):
 
     lot_to_delete = ParkingLot.query.get_or_404(lot_id)
     occupied_spots = ParkingSpot.query.filter_by(lot_id=lot_id, status='O').first()
+    existing_booking = Booking.query.join(ParkingSpot).filter(ParkingSpot.lot_id == lot_id).first()
 
-    if occupied_spots:
+    if existing_booking:
+        flash("Cannot delete lot: It has booking history. Deleting it would remove these records.", "error")
+    elif occupied_spots:
         flash(f"Cannot delete '{lot_to_delete.name}'. It has occupied spots.", "error")
     else:
         db.session.delete(lot_to_delete)
@@ -194,24 +293,23 @@ def admin_chart_data():
     if not session.get('is_admin'):
         return jsonify({"error": "Admin access required"}), 403
 
-    # Pie Chart: Overall Occupancy
     total_occupied = ParkingSpot.query.filter_by(status='O').count()
     total_available = ParkingSpot.query.filter_by(status='A').count()
 
-    # Bar Chart: Occupancy per Lot
     lots = ParkingLot.query.all()
-    lot_occupancy_data = {
-        "labels": [lot.name for lot in lots],
-        "datasets": [{
-            "label": "Occupied Spots",
-            "data": [len([spot for spot in lot.spots if spot.status == 'O']) for lot in lots],
-            "backgroundColor": "rgba(220, 53, 69, 0.6)"
-        }, {
-            "label": "Available Spots",
-            "data": [len([spot for spot in lot.spots if spot.status == 'A']) for lot in lots],
-            "backgroundColor": "rgba(40, 167, 69, 0.6)"
-        }]
-    }
+    occupied_counts = {}
+    available_counts = {}
+
+    for lot in lots:
+        occupied_count = 0
+        available_count = 0
+        for spot in lot.spots:
+            if spot.status == 'O':
+                occupied_count += 1
+            else:
+                available_count += 1
+        occupied_counts[lot.name] = occupied_count
+        available_counts[lot.name] = available_count
 
     # Create Charts
     chart_data = {
@@ -219,61 +317,33 @@ def admin_chart_data():
             "labels": ["Occupied", "Available"],
             "data": [total_occupied, total_available]
         },
-        "lot_occupancy": lot_occupancy_data
+        "lot_occupancy": {
+            "labels": list(occupied_counts.keys()),
+            "occupied_data": list(occupied_counts.values()),
+            "available_data": list(available_counts.values())
+        }
     }
     
     return jsonify(chart_data)
 
 
 
-
-# --- Login Routes ---
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        user = User.query.filter_by(username=username).first()
-
-        if user and user.password == password:
-            session['user_id'] = user.id
-            session['is_admin'] = user.is_admin
-            flash("Login successful!", "success")
-            if user.is_admin:
-                return redirect(url_for('admin_dashboard'))
-            else:
-                return redirect(url_for('user_dashboard'))
-        else:
-            flash("Invalid credentials.", "error")
-    return render_template('login.html')
-
-
-
-
-# ---- Registration Route ---
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-
-        # Check if username or email already exists
-        user_exists = User.query.filter((User.username == username) | (User.email == email)).first()
-        if user_exists:
-            flash("Username or email already exists. Please choose another.", "error")
-            return redirect(url_for('register'))
-
-        # Create new user
-        new_user = User(username=username, email=email, password=password)
-        db.session.add(new_user)
-        db.session.commit()
-
-        flash("Registration successful! Please log in.", "success")
+# Admin Dashboard: View All Bookings Route
+@app.route('/admin/bookings')
+def admin_all_bookings():
+    if not session.get('is_admin'):
+        flash("Admin access required.", "error")
         return redirect(url_for('login'))
 
-    return render_template('register.html')
+    all_bookings = Booking.query.filter(Booking.check_out_time.isnot(None)).order_by(Booking.check_out_time.desc()).all()
 
+    for booking in all_bookings:
+        booking.duration_str = format_duration(booking)
+
+    return render_template('admin_all_bookings.html', bookings=all_bookings)
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 # --- User Routes ---    
@@ -292,16 +362,8 @@ def user_dashboard():
     return render_template('user_dashboard.html', lots=lots, active_bookings=active_bookings)
 
 
-# User Dashboard: Logout Function
-@app.route('/logout')
-def logout():
-    session.clear()
-    flash("You have been logged out.", "success")
-    return redirect(url_for('login'))
 
-
-
-# User Dashboard: Book Parking Spot Function
+# User Dashboard: Book Parking Spot Function 
 @app.route('/book/<int:lot_id>', methods=['POST'])
 def book_spot(lot_id):
     user_id = session.get('user_id')
@@ -339,7 +401,6 @@ def release_spot(booking_id):
     booking_to_release = Booking.query.filter_by(id=booking_id, user_id=user_id, check_out_time=None).first()
 
     if booking_to_release:
-        
         booking_to_release.check_out_time = datetime.utcnow()
         spot = ParkingSpot.query.get(booking_to_release.spot_id)
         lot = ParkingLot.query.get(spot.lot_id)
@@ -358,3 +419,63 @@ def release_spot(booking_id):
         flash("Booking not found or already released.", "error")
 
     return redirect(url_for('user_dashboard'))
+
+
+
+# User Dashboard: View Booking History Route
+@app.route('/history')
+def user_history():
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+    
+    completed_bookings = Booking.query.filter(Booking.user_id == user_id,Booking.check_out_time.isnot(None)).order_by(Booking.check_out_time.desc()).all()
+
+    
+    for booking in completed_bookings:
+        booking.duration_str = format_duration(booking)
+        
+    return render_template('user_history.html', bookings=completed_bookings)
+
+
+
+# User Dashboard: View Summary Charts Route
+@app.route('/user/charts')
+def user_charts():
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+    return render_template('user_charts.html')
+
+@app.route('/api/user/chart-data')
+def user_chart_data():
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({"error": "User not logged in"}), 403
+
+    bookings = Booking.query.filter(Booking.user_id == user_id,Booking.check_out_time.isnot(None)).all()
+
+    cost_per_lot = {}
+    visits_per_lot = {}
+
+    for booking in bookings:
+        lot_name = booking.parking_spot.parking_lot.name
+        cost_per_lot[lot_name] = cost_per_lot.get(lot_name, 0) + booking.total_cost
+        visits_per_lot[lot_name] = visits_per_lot.get(lot_name, 0) + 1
+
+    # Create Charts
+    chart_data = {
+        "cost_per_lot": {
+            "labels": list(cost_per_lot.keys()),
+            "data": list(cost_per_lot.values())
+        },
+        "visits_per_lot": {
+            "labels": list(visits_per_lot.keys()),
+            "data": list(visits_per_lot.values())
+        }
+    }
+    
+    return jsonify(chart_data)
+
+
+
+

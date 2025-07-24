@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Parking Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 80%;
+            max-width: 600px;
+            margin: 2em auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <a href="{{ url_for('user_dashboard') }}" class="btn btn-primary"> Back to Dashboard</a>
+    </div>
+    <h1>My Parking Summary</h1>
+    <hr>
+
+    <div class="chart-container">
+        <h2>Money Spent per Lot</h2>
+        <canvas id="costPieChart"></canvas>
+    </div>
+
+    <div class="chart-container">
+        <h2>Number of Visits per Lot</h2>
+        <canvas id="visitsBarChart"></canvas>
+    </div>
+
+    <script>
+
+        fetch('/api/user/chart-data')
+            .then(response => response.json())
+            .then(data => {
+                const pieCtx = document.getElementById('costPieChart').getContext('2d');
+                new Chart(pieCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: data.cost_per_lot.labels,
+                        datasets: [{
+                            label: 'Cost (₹)',
+                            data: data.cost_per_lot.data
+                    }]}
+                });
+
+                
+                const barCtx = document.getElementById('visitsBarChart').getContext('2d');
+                new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: data.visits_per_lot.labels,
+                        datasets: [{
+                            label: 'Number of Visits',
+                            data: data.visits_per_lot.data,
+                            backgroundColor: 'rgba(0, 123, 255, 0.6)', 
+                            borderColor: 'rgba(0, 123, 255, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: { 
+                                beginAtZero: true,
+                                ticks: { 
+                                    stepSize: 1 
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching chart data:', error));
+    </script>
+</body>
+</html>

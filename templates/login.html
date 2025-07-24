@@ -1,32 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
+
 <body>
-    <h1>Login to Your Account</h1>
-
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
-
-    <form method="POST" class="card-form">
-        <label>Username:</label>
-        <input type="text" name="username" required>
-        
-        <label>Password:</label>
-        <input type="password" name="password" required>
-        
-        <button type="submit" class="btn btn-success">Login</button>
-    </form>
+  <div>
+      <a href="{{ url_for('index') }}" class="btn btn-danger" style="float:right;"> Back to Home</a>
+  </div>
+  <h1>Login to Your Account</h1>
     
-    <hr>
-    <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="flash {{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <form method="POST" class="card-form">
+      <label>Username:</label>
+      <input type="text" name="username" required>
+      
+      <label>Password:</label>
+      <input type="password" name="password" required>
+      
+      <button type="submit" class="btn btn-success">Login</button>
+  </form>
+  
+  <hr>
+  <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
 </body>
 </html>

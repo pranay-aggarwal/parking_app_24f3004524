@@ -5,12 +5,13 @@
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-<body>
 
+<body>
     <h1>Admin Dashboard</h1>
     <div>
         <a href="{{ url_for('view_users') }}" class="btn btn-primary">View All Users</a>
-        <a href="{{ url_for('admin_charts') }}" class="btn btn-primary">View Summary Charts</a>
+        <a href="{{ url_for('admin_all_bookings') }}" class="btn btn-primary">View All Bookings</a>
+        <a href="{{ url_for('admin_charts') }}" class="btn btn-primary">View Lot Summary</a>
         <a href="{{ url_for('logout') }}" class="btn btn-danger" style="float: right;">Logout</a>
     </div>
 

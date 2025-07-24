@@ -1,0 +1,64 @@
+.main-header {
+    padding: 15px 5%;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    z-index: 100;
+}
+
+.main-header nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-logo {
+    height: 50px;
+    width: auto;
+    border-radius: 20px;
+}
+
+.nav-actions a {
+    text-decoration: none;
+    margin-left: 1em;
+}
+
+
+.hero-container {
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4em 5%;
+    background-color: #007bff; 
+    min-height: 80vh;
+}
+
+.hero-text {
+    max-width: 500px;
+    margin-right: 10em;
+}
+
+.hero-text h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: white;
+    line-height: 1.2;
+    margin-bottom: 0.5em;
+}
+
+.hero-text p {
+    font-size: 1.1rem;
+    color: white;
+    margin-bottom: 1.5em;
+}
+
+.hero-image img {
+    max-width: 600px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+
+
+

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Parking History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div>
+        <a href="{{ url_for('user_dashboard') }}" class="btn btn-primary"> Back to Dashboard</a>
+    </div>
+    <h1>My Parking History</h1>
+    <hr>
+    <table>
+        <thead>
+            <tr>
+                <th>Lot Name</th>
+                <th>Vehicle No.</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Duration</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.parking_spot.parking_lot.name }}</td>
+                <td>{{ booking.vehicle_number }}</td>
+                <td>{{ booking.check_in_time.strftime('%b %d, %H:%M') }}</td>
+                <td>{{ booking.check_out_time.strftime('%b %d, %H:%M') }}</td>
+                <td>{{ booking.duration_str }}</td>
+                <td>₹{{ '%.2f'|format(booking.total_cost) }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="6">You have no past parking records.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

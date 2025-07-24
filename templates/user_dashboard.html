@@ -8,7 +8,8 @@
 <body>
     <h1>User Dashboard</h1>
     <div>
-        <a href ="{{ url_for('index') }}" class="btn btn-primary">Home</a>
+        <a href ="{{ url_for('user_history') }}" class="btn btn-primary">Booking History</a>
+        <a href="{{ url_for('user_charts') }}" class="btn btn-primary">View Summary</a>
         <a href="{{ url_for('logout') }}" class="btn btn-danger" style="float:right;">Logout</a>
     </div>
 

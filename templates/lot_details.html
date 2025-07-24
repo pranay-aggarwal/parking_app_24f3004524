@@ -4,41 +4,9 @@
     <meta charset="UTF-8">
     <title>Lot Details - {{ lot.name }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style>
-        .spot-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 1em;
-            margin-top: 2em;
-        }
-        .spot {
-            padding: 1em;
-            border-radius: 5px;
-            text-align: center;
-            font-weight: bold;
-            color: white;
-            position: relative; 
-        }
-        .spot.available { background-color: #28a745; }
-        .spot.occupied { background-color: #dc3545; }
-        .spot span.user-info { font-size: 0.8em; font-weight: normal; display: block; margin-top: 5px; }
-        .delete-spot-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(0,0,0,0.3);
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            line-height: 20px;
-            padding: 0;
-        }
-        .add-spot-form { margin-top: 2em; }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/lot_details.css') }}">
 </head>
+
 <body>
     <div>
         <a href="{{ url_for('admin_dashboard') }}" class="btn btn-primary"> Back to Dashboard</a>
