@@ -11,6 +11,8 @@ Park Easy is a multi-user web application designed to manage parking lots and st
 
 This project was developed as part of the Modern Application Development 1 course.
 
+**Project Report:** https://docs.google.com/document/d/1LRyOGXDZTy6jazNFcO-UsDHHw7BRRhjs-9YZh0UIVRg/edit?usp=sharing
+
 ## Features
 
 ### Admin
@@ -32,19 +34,20 @@ This project was developed as part of the Modern Application Development 1 cours
   * **Release & Payment:** Easily release a parked spot. The system automatically calculates the duration and total cost.
   * **Parking History:** View a detailed history of all past parking sessions, including duration and cost.
   * **Personal Summary:** Access personal charts visualizing parking habits, such as money spent and visits per lot.
+## ER Diagram
+![ER Diagram](./static/erdiag.jpg)
 
 ## Tech Stack
 
   * **Backend:** Flask
   * **Frontend:** HTML, CSS, JavaScript, Jinja2
-  * **Database:** SQLite
+  * **Database:** SQLite, SQLAlchemy
   * **Visualization:** Chart.js
 
 ## Setup and Installation
 
 Follow these steps to get the application running on your local machine.
 
-### to run
 - python -m venv venv
 - .\venv\Scripts\activate (windows) or . venv/Scripts/activate (git bash)
 - pip install -r requirements.txt
