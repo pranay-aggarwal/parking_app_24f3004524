@@ -10,6 +10,7 @@
 Park Easy is a multi-user web application designed to manage parking lots and streamline the process of booking a parking spot. It features distinct roles for an administrator, who manages the entire system, and for users, who can register, book, and manage their parking sessions.
 
 This project was developed as part of the Modern Application Development 1 course.
+**Project Report:** https://docs.google.com/document/d/1LRyOGXDZTy6jazNFcO-UsDHHw7BRRhjs-9YZh0UIVRg/edit?usp=sharing
 
 ## Features
 
