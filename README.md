@@ -37,14 +37,13 @@ This project was developed as part of the Modern Application Development 1 cours
 
   * **Backend:** Flask
   * **Frontend:** HTML, CSS, JavaScript, Jinja2
-  * **Database:** SQLite
+  * **Database:** SQLite, SQLAlchemy
   * **Visualization:** Chart.js
 
 ## Setup and Installation
 
 Follow these steps to get the application running on your local machine.
 
-### to run
 - python -m venv venv
 - .\venv\Scripts\activate (windows) or . venv/Scripts/activate (git bash)
 - pip install -r requirements.txt
