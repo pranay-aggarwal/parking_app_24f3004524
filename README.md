@@ -33,7 +33,7 @@ This project was developed as part of the Modern Application Development 1 cours
   * **Parking History:** View a detailed history of all past parking sessions, including duration and cost.
   * **Personal Summary:** Access personal charts visualizing parking habits, such as money spent and visits per lot.
 ## ER Diagram
-![ER Diagram](./assets/erdiag.jpg)
+![ER Diagram](./static/erdiag.jpg)
 
 ## Tech Stack
 
