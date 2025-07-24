@@ -32,6 +32,8 @@ This project was developed as part of the Modern Application Development 1 cours
   * **Release & Payment:** Easily release a parked spot. The system automatically calculates the duration and total cost.
   * **Parking History:** View a detailed history of all past parking sessions, including duration and cost.
   * **Personal Summary:** Access personal charts visualizing parking habits, such as money spent and visits per lot.
+## ER Diagram
+![ER Diagram](./assets/erdiag.jpg)
 
 ## Tech Stack
 
