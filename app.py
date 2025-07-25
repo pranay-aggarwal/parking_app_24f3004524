@@ -6,7 +6,7 @@ import math
 # ------------------------------------------------------------------------------------------------------------------------------------------------------
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'my_secret_key'
+app.config['SECRET_KEY'] = 'PranaysSecretKey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///parking.db'
 db.init_app(app)
 
