@@ -13,8 +13,6 @@ This project was developed as part of the Modern Application Development 1 cours
 
 **Project Report:** https://docs.google.com/document/d/1LRyOGXDZTy6jazNFcO-UsDHHw7BRRhjs-9YZh0UIVRg/edit?usp=sharing
 
-**Demo:** https://drive.google.com/file/d/119l4-Pv5CKez6CV6j8hwHcbSeBBFB4BF/view?usp=drive_link
-
 ## Features
 
 ### Admin
